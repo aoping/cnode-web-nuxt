@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [{
+    "name": "nuxt Dev",
+    "type": "node",
+    "request": "launch",
+    "protocol": "inspector",
+    "program": "${workspaceRoot}/node_modules/.bin/nuxt",
+    "stopOnEntry": false,
+    "args": [
+      "dev"
+    ],
+    "cwd": "${workspaceRoot}",
+    "sourceMaps": true,
+    "env": {
+      "NODE_ENV": "development",
+      "DEBUG": "nuxt:*,app"
+    }
+  }]
+}
