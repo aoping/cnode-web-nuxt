@@ -48,5 +48,11 @@
     "require-extension-hooks": "^0.3.3",
     "require-extension-hooks-babel": "^0.1.1",
     "require-extension-hooks-vue": "^2.0.0"
+  },
+  "config": {
+    "nuxt": {
+      "host": "127.0.0.1",
+      "port": "3001"
+    }
   }
 }
