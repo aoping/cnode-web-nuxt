@@ -40,7 +40,6 @@ export default {
       const r = await getUser(res.data.author.loginname)
       if (r.success) topicUser = r.data
     }
-    console.log(topicUser)
     return { topic: res.data, topicUser }
   },
   created() {

@@ -6,24 +6,14 @@
       </el-input>
     </el-col>
     <el-col :span="16">
-      <el-menu :default-active="activeIndex" class="menu" mode="horizontal" @select="handleSelect">
-        <el-menu-item index="1">首页</el-menu-item>
-        <el-menu-item index="2">关于</el-menu-item>
-        <el-submenu index="3">
-          <template slot="title">我的工作台</template>
-          <el-menu-item index="2-1">选项1</el-menu-item>
-          <el-menu-item index="2-2">选项2</el-menu-item>
-          <el-menu-item index="2-3">选项3</el-menu-item>
-          <el-submenu index="2-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="2-4-1">选项1</el-menu-item>
-            <el-menu-item index="2-4-2">选项2</el-menu-item>
-            <el-menu-item index="2-4-3">选项3</el-menu-item>
-          </el-submenu>
-        </el-submenu>
-        <el-menu-item index="4">
-          <a href="https://www.ele.me" target="_blank">登录</a>
-        </el-menu-item>
+      <el-menu :default-active="activeIndex" class="menu" mode="horizontal">
+        <el-menu-item
+          v-for="(menu, index) in menus"
+          v-if="menu.login === undefined ||  menu.login === isLogin"
+          @click="switchMenu(index)"
+          :key="menu.text"
+          :index="menu.path"
+        >{{ menu.text }}</el-menu-item>
       </el-menu>
     </el-col>
   </el-row>
@@ -33,14 +23,32 @@
 export default {
   data() {
     return {
-      activeIndex: '1',
-      activeIndex2: '1',
-      input10: ''
+      searchValue: '',
+      activeIndex: '/',
+      isLogin: false,
+      menus: [
+        { text: '首页', path: '/' },
+        { text: '未读消息', path: '/user/messages', login: true },
+        // { text: '新手入门', path: '' },
+        // { text: 'API', path: '' },
+        // { text: '关于', path: '' },
+        // { text: '注册', path: '', login: false },
+        { text: '登录', path: '/login', login: false },
+        { text: '设置', path: '', login: true },
+        { text: '退出', handler: 'loginOut', login: true }
+      ]
     }
   },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath)
+    switchMenu(index) {
+      let { path, handler } = this.menus[index]
+      if (path) {
+        this.$router.push(path)
+        return
+      }
+      if (handler) {
+        this[handler]()
+      }
     }
   }
 }

@@ -2,10 +2,11 @@ import originAxios from 'axios'
 
 const axios = originAxios.create({
   baseURL: 'https://cnodejs.org/api/v1',
+  // baseURL: 'http://127.0.0.1:7001/api/v1',
   headers: {
-      post: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-      }
+    // post: {
+    //   'Content-Type': 'application/x-www-form-urlencoded'
+    // }
   }
 })
 
