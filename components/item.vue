@@ -11,16 +11,21 @@
     </el-col>
     <el-col :span="6" class="right">
       <!-- <img class="replier" src="https://avatars0.githubusercontent.com/u/376338?v=4&s=120"> -->
-      <p class="date">{{item.create_at}}</p>
+      <p class="date">{{item.create_at |getLastTimeStr(true)}}</p>
     </el-col>
   </el-row>
 </template>
 
 <script>
+import moment from 'moment'
+import { getLastTimeStr } from '@/utils/filters'
 export default {
   props: ['item'],
   data() {
     return {}
+  },
+  filters: {
+    getLastTimeStr
   },
   components: {}
 }
