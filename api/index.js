@@ -1,5 +1,6 @@
 import axios from '@/plugins/axios';
 import config from '@/config'
+import qs from 'qs'
 
 export function getTopics(
   page = 1,

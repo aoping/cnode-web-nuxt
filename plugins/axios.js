@@ -1,8 +1,9 @@
 import originAxios from 'axios'
+import qs from 'qs'
 
 const axios = originAxios.create({
-  baseURL: 'https://cnodejs.org/api/v1',
-  // baseURL: 'http://127.0.0.1:7001/api/v1',
+  // baseURL: 'https://cnodejs.org/api/v1',
+  baseURL: '/api/v1',
   headers: {
     // post: {
     //   'Content-Type': 'application/x-www-form-urlencoded'
@@ -15,6 +16,9 @@ const axios = originAxios.create({
 // Add a request interceptor
 axios.interceptors.request.use((config) => {
   // Do something before request is sent
+  config.data = qs.stringify(config.data, {
+    allowDots: true //Option allowDots can be used to enable dot notation
+  })
   return config;
 }, (error) => {
   // Do something with request error
