@@ -3,7 +3,7 @@
     <el-main style="padding: 10px 0;">
       <el-header>
         <el-radio-group v-model="tab">
-          <el-radio-button v-for="item in tabs" :key="item.tab" :label="item.tab">{{item.text}}</el-radio-button>
+          <el-radio-button v-for="(val, key) in tabs" :key="key" :label="key">{{val}}</el-radio-button>
         </el-radio-group>
       </el-header>
       <vList :list="list"/>
@@ -35,14 +35,7 @@ export default {
   },
   data() {
     return {
-      tabs: [
-        { text: '全部', tab: 'all' },
-        { text: '精华', tab: 'good' },
-        { text: '分享', tab: 'share' },
-        { text: '问答', tab: 'ask' },
-        { text: '招聘', tab: 'job' },
-        { text: '客户端测试', tab: 'dev' }
-      ],
+      tabs: config.tabs,
       loading: false,
       tab: this.$route.query.tab || 'all',
       page: Number(this.$route.query.page) || 1,

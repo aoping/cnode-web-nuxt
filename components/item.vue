@@ -1,5 +1,5 @@
 <template>
-  <el-row :gutter="20" style="margin:0px;">
+  <el-row>
     <el-col :span="18">
       <img class="avatar" :src="item.author.avatar_url">
       <div class="up-read">
@@ -7,7 +7,9 @@
         <span class="read">/{{item.visit_count}}</span>
       </div>
       <el-tag type="success" size="small" v-if="item.good">精华</el-tag>
-      <p class="title">{{item.title}}</p>
+      <p class="title">
+        <nuxt-link :to="'/topic/'+item.id">{{item.title}}</nuxt-link>
+      </p>
     </el-col>
     <el-col :span="6" class="right">
       <!-- <img class="replier" src="https://avatars0.githubusercontent.com/u/376338?v=4&s=120"> -->
@@ -18,15 +20,12 @@
 
 <script>
 import moment from 'moment'
-import { getLastTimeStr } from '@/utils/filters'
 export default {
   props: ['item'],
   data() {
     return {}
   },
-  filters: {
-    getLastTimeStr
-  },
+
   components: {}
 }
 </script>

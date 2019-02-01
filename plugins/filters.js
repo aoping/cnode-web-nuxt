@@ -1,4 +1,5 @@
 import moment from '@/plugins/moment'
+import Vue from 'vue'
 
 /**
  * 格式化日期或时间
@@ -12,3 +13,10 @@ export const getLastTimeStr = (time, friendly) => {
     return moment(time).format('YYYY-MM-DD')
   }
 }
+
+Vue.filter('getLastTimeStr', getLastTimeStr)
+
+const filters = {
+  getLastTimeStr
+}
+export default filters

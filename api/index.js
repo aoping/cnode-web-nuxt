@@ -13,6 +13,10 @@ export function getTopicDetail(id) {
 }
 
 
+export function getUser(id) {
+  return axios.get(`/user/${id}`)
+}
+
 export function accesstoken(accesstoken) {
   return axios.post('/accesstoken', {
     accesstoken
