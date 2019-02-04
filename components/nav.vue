@@ -20,15 +20,15 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
       searchValue: '',
       activeIndex: '/',
-      isLogin: false,
       menus: [
         { text: '首页', path: '/' },
-        { text: '未读消息', path: '/user/messages', login: true },
+        { text: '未读消息', path: '', login: true },
         // { text: '新手入门', path: '' },
         // { text: 'API', path: '' },
         // { text: '关于', path: '' },
@@ -39,9 +39,22 @@ export default {
       ]
     }
   },
+  mounted() {
+    if (window.sessionStorage.user) {
+      this.setUserInfo(JSON.parse(window.sessionStorage.user))
+    }
+  },
+  computed: {
+    ...mapState(['userInfo']),
+    isLogin() {
+      return this.userInfo && this.userInfo.id ? true : false
+    }
+  },
   methods: {
+    ...mapActions(['setUserInfo']),
     switchMenu(index) {
-      let { path, handler } = this.menus[index]
+      if (!index) return
+      const { path, handler } = this.menus[index]
       if (path) {
         this.$router.push(path)
         return
@@ -49,6 +62,11 @@ export default {
       if (handler) {
         this[handler]()
       }
+    },
+    loginOut() {
+      this.setUserInfo({})
+      window.window.sessionStorage.user = JSON.stringify({})
+      this.$router.push('/')
     }
   }
 }
