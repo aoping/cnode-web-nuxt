@@ -34,6 +34,7 @@ export default {
         // { text: '关于', path: '' },
         { text: '注册', path: '/signup', login: false },
         { text: '登录', path: '/login', login: false },
+        { text: '创建话题', path: '/topic/create', login: true },
         { text: '设置', path: '', login: true },
         { text: '退出', handler: 'loginOut', login: true }
       ]

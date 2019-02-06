@@ -6,17 +6,15 @@
           <el-radio-button v-for="(val, key) in tabs" :key="key" :label="key">{{val}}</el-radio-button>
         </el-radio-group>
       </el-header>
-      <div v-if="list&&list.length>0">
-        <vList :list="list"/>
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="1000"
-          :current-page="page"
-          @current-change="currentChange"
-        ></el-pagination>
-      </div>
+      <vList v-if="list&&list.length>0" :list="list"/>
       <el-alert v-else title="暂无数据" type="info"></el-alert>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="1000"
+        :current-page="page"
+        @current-change="currentChange"
+      ></el-pagination>
     </el-main>
     <el-aside width="400px" style="padding: 10px 0;margin-left: 50px;">Aside</el-aside>
   </el-container>

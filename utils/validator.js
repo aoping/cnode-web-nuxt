@@ -26,15 +26,6 @@ export const checkPass = (rule, value, callback) => {
   }, 1000)
 }
 
-export const checkRePass = (rule, value, callback) => {
-  setTimeout(() => {
-    if (this.ruleForm.pass !== value) {
-      callback(new Error('两次密码输入不一致。'))
-    } else {
-      callback()
-    }
-  }, 1000)
-}
 
 export const checkEmail = (rule, value, callback) => {
   setTimeout(() => {

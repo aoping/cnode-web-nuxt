@@ -62,3 +62,14 @@ export function replies(accesstoken, topicid, content) {
     content,
   })
 }
+
+
+// 创建主题
+export function createTopics(accesstoken, tab, title, content) {
+  return axios.post(`/topics`, {
+    accesstoken,
+    tab,
+    title,
+    content
+  })
+}

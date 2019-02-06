@@ -1,15 +1,33 @@
 import mongoose from 'mongoose'
 import {
+  incrementScoreAndReplyCount
+} from '../database/services/user'
+
+import {
+  getTopicsByQuery
+} from '../database/services/topic'
+
+import {
   validateId,
   bhash,
   bcompare,
   makeGravatar
 } from '../utils/helper'
+
+import {
+  markdown,
+} from '../utils/markdown'
+import {
+  token_required,
+  pagination,
+} from './middleware'
 const Router = require('koa-router')
 const validator = require('validator')
 const uuid = require('uuid');
-
+const _ = require('lodash')
 const User = mongoose.model('User')
+const Topic = mongoose.model('Topic')
+
 
 export default app => {
   const router = new Router()
@@ -84,7 +102,7 @@ export default app => {
     user.email = email
     user.avatar = avatarUrl
     user.active = true
-    user.accessToken = uuid.v4()
+    user.accesstoken = uuid.v4()
     await user.save()
     // 发送激活邮件
     // await service.mail.sendActiveMail(email, utility.md5(email + passhash + config.session_secret), loginname);
@@ -142,15 +160,87 @@ export default app => {
     const {
       id,
       avatar_url,
-      accessToken
+      accesstoken
     } = existUser
     ctx.body = {
       success: true,
       loginname,
       id,
       avatar_url,
-      accessToken
+      accesstoken
     }
+  })
+
+  // 新建主题
+  router.post('/api/v1/topics', token_required(), async (ctx, next) => {
+    const {
+      title,
+      content,
+      tab
+    } = ctx.request.body
+
+    // 储存新主题帖
+    const topic = new Topic({
+      title,
+      content,
+      tab,
+      author_id: ctx.request.user.id
+    })
+
+    await topic.save()
+
+    // 发帖用户增加积分,增加发表主题数量
+    await incrementScoreAndReplyCount(topic.author_id, 5, 1)
+
+    // 通知被@的用户
+    // await ctx.service.at.sendMessageToMentionUsers(
+    //   body.content,
+    //   topic.id,
+    //   ctx.request.user.id
+    // );
+
+    ctx.body = {
+      success: true,
+      topic_id: topic.id,
+    }
+  })
+
+  // 获取
+  router.get('/api/v1/topics', pagination(), async (ctx, next) => {
+    const tab = ctx.query.tab || 'all';
+    const mdrender = ctx.query.mdrender !== 'false';
+
+    const query = {}
+    if (!tab || tab === 'all') {
+      query.tab = {
+        $nin: ['job', 'dev']
+      }
+    } else {
+      if (tab === 'good') {
+        query.good = true
+      } else {
+        query.tab = tab
+      }
+    }
+
+    let topics = await getTopicsByQuery(query,
+      // TODO 修改 eslint 支持在 {} 内使用 ...，栗子：{ sort: '-top -last_reply_at', ...ctx.pagination }
+      Object.assign({
+        sort: '-top -last_reply_at'
+      }, ctx.pagination))
+    topics = topics.map(topic => {
+      topic.content = mdrender ? markdown(topic.content) : topic.content;
+      topic.author = _.pick(topic.author, ['loginname', 'avatar_url']);
+      topic.id = topic._id;
+      return _.pick(topic, ['id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
+        'good', 'top', 'reply_count', 'visit_count', 'create_at', 'author'
+      ]);
+    });
+
+    ctx.body = {
+      success: true,
+      data: topics,
+    };
   })
 
   app

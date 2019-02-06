@@ -48,6 +48,7 @@ export default {
     async submitForm(formName) {
       try {
         const result = await this.$refs[formName].validate()
+        console.log(result)
         if (result) {
           const res = await login(this.ruleForm)
           console.log(res)

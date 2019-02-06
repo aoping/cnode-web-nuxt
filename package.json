@@ -25,6 +25,8 @@
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "koa-session": "^5.10.1",
+    "lodash": "^4.17.11",
+    "markdown-it": "^8.4.2",
     "moment": "^2.24.0",
     "mongoose": "^5.4.9",
     "muse-ui": "^3.0.1",
@@ -33,7 +35,8 @@
     "ramda": "^0.26.1",
     "simplemde": "^1.11.2",
     "utility": "^1.15.0",
-    "validator": "^10.11.0"
+    "validator": "^10.11.0",
+    "xss": "^1.0.3"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^0.0.1",

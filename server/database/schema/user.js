@@ -118,7 +118,7 @@ const UserSchema = new Schema({
     type: String
   },
 
-  accessToken: {
+  accesstoken: {
     type: String
   },
 });
@@ -140,7 +140,7 @@ UserSchema.index({
   githubId: 1
 });
 UserSchema.index({
-  accessToken: 1
+  accesstoken: 1
 });
 
 UserSchema.virtual('avatar_url').get(function () {
