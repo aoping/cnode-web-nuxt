@@ -32,7 +32,7 @@ export default {
         // { text: '新手入门', path: '' },
         // { text: 'API', path: '' },
         // { text: '关于', path: '' },
-        // { text: '注册', path: '', login: false },
+        { text: '注册', path: '/signup', login: false },
         { text: '登录', path: '/login', login: false },
         { text: '设置', path: '', login: true },
         { text: '退出', handler: 'loginOut', login: true }

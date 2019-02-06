@@ -12,7 +12,7 @@ const {
 } = require('nuxt')
 const r = path => resolve(__dirname, path)
 
-const MIDDLEWARE = ['router']
+const MIDDLEWARE = ['database', 'general', 'router']
 
 const app = new Koa()
 
@@ -43,6 +43,7 @@ async function start() {
   }
 
   await useMiddleware(app)(MIDDLEWARE)
+
 
   app.use(ctx => {
     ctx.status = 200

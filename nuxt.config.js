@@ -58,15 +58,15 @@ module.exports = {
   //   // With options
   //   // '/api2': { target: 'http://example.com', ws: false }
   // },
-  proxy: {
-    //开启代理
-    "/api/": {
-      target: "http://127.0.0.1:7001/api",
-      pathRewrite: {
-        "^/api/": ""
-      }
-    }
-  },
+  // proxy: {
+  //   //开启代理
+  //   "/api/": {
+  //     target: "http://127.0.0.1:7001/api",
+  //     pathRewrite: {
+  //       "^/api/": ""
+  //     }
+  //   }
+  // },
   /*
    ** Nuxt.js modules
    */

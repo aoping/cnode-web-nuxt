@@ -9,6 +9,21 @@ export function getTopics(
   return axios.get(`/topics?limit=${config.PAGENUM}&mdrender=true&page=${page}&tab=${tab}`)
 }
 
+export function signup(ruleForm) {
+  const {
+    loginname,
+    pass,
+    re_pass,
+    email
+  } = ruleForm
+  return axios.post(`/signup`, {
+    loginname,
+    pass,
+    re_pass,
+    email
+  })
+}
+
 export function getTopicDetail(id) {
   return axios.get(`/topic/${id}`)
 }
