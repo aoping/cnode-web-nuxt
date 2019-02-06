@@ -64,9 +64,9 @@ export function getUserByGithubId(githubId) {
  * @param {String} token
  * @return {Promise[user]} 承载用户的 Promise 对象
  */
-export function getUserByToken(accessToken) {
+export function getUserByToken(accesstoken) {
   const query = {
-    accessToken
+    accesstoken
   }
   return User.findOne(query).exec()
 }
@@ -166,7 +166,7 @@ export function newAndSave(name, loginname, pass, email, avatar_url, active) {
   user.email = email
   user.avatar = avatar_url
   user.active = active || false
-  user.accessToken = uuid.v4()
+  user.accesstoken = uuid.v4()
 
   return user.save()
 }

@@ -28,6 +28,7 @@ const Router = require('koa-router')
 const validator = require('validator')
 const uuid = require('uuid')
 const _ = require('lodash')
+const passport = require('koa-passport')
 const User = mongoose.model('User')
 const Topic = mongoose.model('Topic')
 
@@ -39,6 +40,28 @@ export default app => {
     await next()
     console.timeEnd(`${ctx.method} ${ctx.url}`)
   }
+
+
+  router.get('/auth/github', passport.authenticate('github'))
+
+  router.get('/auth/github/callback', async ctx => {
+    return passport.authenticate('github', (err, user, info, status) => {
+      const {
+        id,
+        loginname,
+        avatar_url,
+        accesstoken
+      } = user
+      const ret = {
+        success: true,
+        loginname,
+        id,
+        avatar_url,
+        accesstoken
+      }
+      ctx.redirect('/login?user='+encodeURI(JSON.stringify(ret)))
+    })(ctx)
+  })
 
   router.post('/api/v1/signup', async (ctx, next) => {
     const loginname = validator.trim(ctx.request.body.loginname || '').toLowerCase()

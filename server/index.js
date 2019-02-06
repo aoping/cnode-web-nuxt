@@ -1,10 +1,11 @@
-const Koa = require('koa')
-const Router = require('koa-router')
-const consola = require('consola')
 import {
   resolve
 } from 'path'
 import R from 'ramda'
+const Koa = require('koa')
+const Router = require('koa-router')
+const consola = require('consola')
+const passport = require('koa-passport')
 
 const {
   Nuxt,
@@ -44,6 +45,10 @@ async function start() {
 
   await useMiddleware(app)(MIDDLEWARE)
 
+  // authentication
+  require('./auth')
+  app.use(passport.initialize())
+  // app.use(passport.session())
 
   app.use(ctx => {
     ctx.status = 200
