@@ -1,10 +1,13 @@
 import mongoose from 'mongoose'
 import {
-  incrementScoreAndReplyCount
+  incrementScoreAndReplyCount,
+  getUserByToken
 } from '../database/services/user'
 
 import {
-  getTopicsByQuery
+  getTopicsByQuery,
+  getFullTopic,
+  incrementVisitCount,
 } from '../database/services/topic'
 
 import {
@@ -23,7 +26,7 @@ import {
 } from './middleware'
 const Router = require('koa-router')
 const validator = require('validator')
-const uuid = require('uuid');
+const uuid = require('uuid')
 const _ = require('lodash')
 const User = mongoose.model('User')
 const Topic = mongoose.model('Topic')
@@ -42,7 +45,7 @@ export default app => {
     const email = validator.trim(ctx.request.body.email || '').toLowerCase()
     const pass = validator.trim(ctx.request.body.pass || '')
     const rePass = validator.trim(ctx.request.body.re_pass || '')
-    let msg;
+    let msg
     // 验证信息的正确性
     if ([loginname, pass, rePass, email].some(item => {
         return item === ''
@@ -67,7 +70,7 @@ export default app => {
         loginname,
         email,
       }
-      return;
+      return
     }
 
     const users = await User.find({
@@ -93,7 +96,7 @@ export default app => {
     const passhash = bhash(pass)
 
     // create gravatar
-    const avatarUrl = makeGravatar(email);
+    const avatarUrl = makeGravatar(email)
 
     let user = new User()
     user.name = loginname
@@ -105,7 +108,7 @@ export default app => {
     user.accesstoken = uuid.v4()
     await user.save()
     // 发送激活邮件
-    // await service.mail.sendActiveMail(email, utility.md5(email + passhash + config.session_secret), loginname);
+    // await service.mail.sendActiveMail(email, utility.md5(email + passhash + config.session_secret), loginname)
     ctx.body = {
       success: true,
       msg: '注册成功',
@@ -197,7 +200,7 @@ export default app => {
     //   body.content,
     //   topic.id,
     //   ctx.request.user.id
-    // );
+    // )
 
     ctx.body = {
       success: true,
@@ -205,10 +208,10 @@ export default app => {
     }
   })
 
-  // 获取
+  // 获取主题列表
   router.get('/api/v1/topics', pagination(), async (ctx, next) => {
-    const tab = ctx.query.tab || 'all';
-    const mdrender = ctx.query.mdrender !== 'false';
+    const tab = ctx.query.tab || 'all'
+    const mdrender = ctx.query.mdrender !== 'false'
 
     const query = {}
     if (!tab || tab === 'all') {
@@ -229,18 +232,79 @@ export default app => {
         sort: '-top -last_reply_at'
       }, ctx.pagination))
     topics = topics.map(topic => {
-      topic.content = mdrender ? markdown(topic.content) : topic.content;
-      topic.author = _.pick(topic.author, ['loginname', 'avatar_url']);
-      topic.id = topic._id;
+      topic.content = mdrender ? markdown(topic.content) : topic.content
+      topic.author = _.pick(topic.author, ['loginname', 'avatar_url'])
+      topic.id = topic._id
       return _.pick(topic, ['id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
         'good', 'top', 'reply_count', 'visit_count', 'create_at', 'author'
-      ]);
-    });
+      ])
+    })
 
     ctx.body = {
       success: true,
       data: topics,
-    };
+    }
+  })
+
+  // 获取主题详情
+  router.get('/api/v1/topic/:id', async (ctx, next) => {
+    const topic_id = String(ctx.params.id)
+    if (topic_id.length !== 24) {
+      ctx.body = {
+        success: false,
+        msg: '不是有效的话题id'
+      }
+      return
+    }
+    const mdrender = ctx.query.mdrender !== 'false'
+    const user = await getUserByToken(ctx.query.accesstoken)
+
+    let [topic, author, replies] = await getFullTopic(topic_id)
+
+    if (!topic) {
+      ctx.status = 404
+      ctx.body = {
+        success: false,
+        msg: '此话题不存在或已被删除',
+      }
+      return
+    }
+
+    // 增加 visit_count
+    topic.visit_count += 1
+    // 写入 DB
+    await incrementVisitCount(topic_id)
+
+    topic.content = mdrender ? markdown(topic.content) : topic.content
+    topic.id = topic._id
+    topic = _.pick(topic, ['id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
+      'good', 'top', 'reply_count', 'visit_count', 'create_at', 'author'
+    ])
+
+    topic.author = _.pick(author, ['loginname', 'avatar_url'])
+
+    topic.replies = replies.map(reply => {
+      reply.content = mdrender ? markdown(reply.content) : reply.content
+
+      reply.author = _.pick(reply.author, ['loginname', 'avatar_url'])
+      reply.id = reply._id
+      reply = _.pick(reply, ['id', 'author', 'content', 'ups', 'create_at', 'reply_id'])
+      reply.reply_id = reply.reply_id || null
+
+      reply.is_uped = !!(reply.ups && user && reply.ups.indexOf(user.id) !== -1)
+
+      return reply
+    })
+
+    // topic.is_collect = user ? !!await getTopicCollect(
+    //   user.id,
+    //   topic_id
+    // ) : false
+
+    ctx.body = {
+      success: true,
+      data: topic,
+    }
   })
 
   app

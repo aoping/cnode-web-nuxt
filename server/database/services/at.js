@@ -54,7 +54,7 @@ export function fetchUsers(text) {
  * @param {String} reply_id 回复ID
  */
 export async function sendMessageToMentionUsers(text, topicId, authorId, reply_id = null) {
-  let users = await getUsersByNames(this.fetchUsers(text));
+  let users = await getUsersByNames(fetchUsers(text));
 
   users = users.filter(user => {
     return !user._id.equals(authorId);
@@ -78,7 +78,7 @@ export async function sendMessageToMentionUsers(text, topicId, authorId, reply_i
  * @return {String} 替换后的文本内容
  */
 export function linkUsers(text) {
-  const users = this.fetchUsers(text);
+  const users = fetchUsers(text);
   for (let i = 0; i < users.length; i++) {
     const name = users[i];
     text = text.replace(

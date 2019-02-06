@@ -35,6 +35,7 @@ import TopicAside from '@/components/topicAside'
 export default {
   async asyncData({ params }) {
     const res = await getTopicDetail(params.topicid)
+    console.log(res)
     let topicUser = {}
     if (res.success) {
       const r = await getUser(res.data.author.loginname)

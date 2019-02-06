@@ -12,7 +12,7 @@
           v-if="menu.login === undefined ||  menu.login === isLogin"
           @click="switchMenu(index)"
           :key="menu.text"
-          :index="menu.path"
+          :index="String(index)"
         >{{ menu.text }}</el-menu-item>
       </el-menu>
     </el-col>
@@ -25,17 +25,17 @@ export default {
   data() {
     return {
       searchValue: '',
-      activeIndex: '/',
+      activeIndex: '0',
       menus: [
         { text: '首页', path: '/' },
-        { text: '未读消息', path: '', login: true },
+        { text: '未读消息', path: '/message', login: true },
         // { text: '新手入门', path: '' },
         // { text: 'API', path: '' },
         // { text: '关于', path: '' },
         { text: '注册', path: '/signup', login: false },
         { text: '登录', path: '/login', login: false },
         { text: '创建话题', path: '/topic/create', login: true },
-        { text: '设置', path: '', login: true },
+        { text: '设置', path: '/setting', login: true },
         { text: '退出', handler: 'loginOut', login: true }
       ]
     }
@@ -54,7 +54,7 @@ export default {
   methods: {
     ...mapActions(['setUserInfo']),
     switchMenu(index) {
-      if (!index) return
+      if (index < 0) return
       const { path, handler } = this.menus[index]
       if (path) {
         this.$router.push(path)
