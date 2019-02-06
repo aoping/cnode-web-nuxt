@@ -7,35 +7,38 @@
       </el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="ruleForm">
-      <el-form-item label="accesstoken" prop="accesstoken">
-        <el-input v-model="ruleForm.accesstoken"></el-input>
+      <el-form-item label="用户名/邮箱" prop="loginname">
+        <el-input v-model="ruleForm.loginname"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="pass">
+        <el-input v-model="ruleForm.pass" type="password"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
       </el-form-item>
-      <el-alert
+      <!-- <el-alert
         title="如何获取 accessToken？ 用户登录后，在设置页面可以看到自己的 accessToken。 建议各移动端应用使用手机扫码的形式登录，验证使用 /accesstoken 接口，登录后长期保存 accessToken"
         type="success"
-      ></el-alert>
+      ></el-alert>-->
     </el-form>
   </div>
 </template>
 
 <script>
-import { accesstoken } from '@/api'
+import { login } from '@/api'
 import { mapActions } from 'vuex'
+import { checkName, checkPass } from '@/utils/validator'
 
 export default {
   data() {
     return {
       ruleForm: {
-        accesstoken: ''
+        loginname: '',
+        pass: ''
       },
       rules: {
-        accesstoken: [
-          { required: true, message: '请输入accessToken', trigger: 'blur' },
-          { min: 36, max: 36, message: '长度为36个字符', trigger: 'blur' }
-        ]
+        loginname: [{ validator: checkName, trigger: ['blur', 'change'] }],
+        pass: [{ validator: checkPass, trigger: ['blur', 'change'] }]
       }
     }
   },
@@ -46,22 +49,21 @@ export default {
       try {
         const result = await this.$refs[formName].validate()
         if (result) {
-          const res = await accesstoken(this.ruleForm.accesstoken)
+          const res = await login(this.ruleForm)
           console.log(res)
           if (res) {
-            res.accesstoken = this.ruleForm.accesstoken
             this.setUserInfo(res)
             window.window.sessionStorage.user = JSON.stringify(res)
             if (this.redirectUrl) this.$router.push(this.redirectUrl)
             else this.$router.push('/')
           } else {
-            this.$message.error('Access Token不正确')
+            this.$message.error('用户名或密码不对')
           }
         } else {
-          this.$message.error('Access Token不正确')
+          this.$message.error('校验不通过，请检查所填字段')
         }
       } catch (e) {
-        this.$message.error('Access Token不正确')
+        this.$message.error('校验不通过，请检查所填字段')
       }
     }
   }

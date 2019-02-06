@@ -89,10 +89,67 @@ export default app => {
     // 发送激活邮件
     // await service.mail.sendActiveMail(email, utility.md5(email + passhash + config.session_secret), loginname);
     ctx.body = {
-        success: true,
-        msg: '注册成功',
-        loginname,
-        email,
+      success: true,
+      msg: '注册成功',
+      loginname,
+      email,
+    }
+  })
+
+  router.post('/api/v1/login', async (ctx, next) => {
+    const loginname = validator.trim(ctx.request.body.loginname || '').toLowerCase()
+    const pass = validator.trim(ctx.request.body.pass || '')
+    let existUser
+
+    if (loginname.indexOf('@') > 0) {
+      existUser = await User.findOne({
+        email: loginname
+      }).exec()
+    } else {
+      existUser = await User.findOne({
+        loginname
+      }).exec()
+    }
+    // 用户不存在
+    if (!existUser) {
+      ctx.body = {
+        success: false,
+        msg: '用户不存在'
+      }
+    }
+
+    const passhash = existUser.pass
+    // TODO: change to async compare
+    const equal = bcompare(pass, passhash)
+    // 密码不匹配
+    if (!equal) {
+      ctx.body = {
+        success: false,
+        msg: '密码不匹配'
+      }
+    }
+
+    // 用户未激活
+    if (!existUser.active) {
+      // 发送激活邮件
+      ctx.body = {
+        success: false,
+        msg: '未激活'
+      }
+    }
+    // {success: true, loginname: req.user.loginname, id: req.user.id, avatar_url: req.user.avatar_url}
+    // 验证通过
+    const {
+      id,
+      avatar_url,
+      accessToken
+    } = existUser
+    ctx.body = {
+      success: true,
+      loginname,
+      id,
+      avatar_url,
+      accessToken
     }
   })
 

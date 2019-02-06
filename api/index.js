@@ -24,6 +24,17 @@ export function signup(ruleForm) {
   })
 }
 
+export function login(ruleForm) {
+  const {
+    loginname,
+    pass,
+  } = ruleForm
+  return axios.post(`/login`, {
+    loginname,
+    pass,
+  })
+}
+
 export function getTopicDetail(id) {
   return axios.get(`/topic/${id}`)
 }
